@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.vbatecan</groupId>
-    <artifactId>spring-boot-jwt</artifactId>
+    <artifactId>portfolio-manager</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>spring-boot-jwt</name>
-    <description>spring-boot-jwt</description>
+    <name>portfolio-manager</name>
+    <description>portfolio-manager</description>
     <url/>
     <licenses>
         <license/>
