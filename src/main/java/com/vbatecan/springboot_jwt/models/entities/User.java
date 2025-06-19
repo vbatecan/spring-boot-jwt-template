@@ -11,9 +11,10 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -24,7 +25,7 @@ import java.util.List;
 public class User implements UserDetails {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer id;
+	private UUID id;
 
 	@Column(nullable = false, unique = true)
 	private String username;
@@ -37,10 +38,10 @@ public class User implements UserDetails {
 	private Role role = Role.GUEST;
 
 	@Column(name = "created_at")
-	private LocalDateTime createdAt;
+	private Instant createdAt;
 
 	@Column(name = "updated_at")
-	private LocalDateTime updatedAt;
+	private Instant updatedAt;
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -49,11 +50,11 @@ public class User implements UserDetails {
 
 	public UserDTO toDTO() {
 		return new UserDTO(
-				id,
-				username,
-				role,
-				createdAt,
-				updatedAt
+			id,
+			username,
+			role,
+			createdAt,
+			updatedAt
 		);
 	}
 }

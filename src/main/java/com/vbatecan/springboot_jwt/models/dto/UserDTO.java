@@ -8,15 +8,16 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserDTO {
 
-	@NotNull(message = "ID cannot be null.")
-	private Integer id;
+	@org.hibernate.validator.constraints.UUID
+	private UUID id;
 
 	@NotBlank(message = "Username cannot be blank.")
 	@Size(min = 3, max = 50, message = "Username must be between 3 and 50 characters.")
@@ -25,6 +26,6 @@ public class UserDTO {
 	@NotNull(message = "Role cannot be null.")
 	private Role role;
 
-	private LocalDateTime createdAt;
-	private LocalDateTime updatedAt;
+	private Instant createdAt;
+	private Instant updatedAt;
 }
