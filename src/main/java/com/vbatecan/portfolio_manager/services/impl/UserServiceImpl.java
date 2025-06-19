@@ -1,8 +1,8 @@
-package com.vbatecan.springboot_jwt.services.impl;
+package com.vbatecan.portfolio_manager.services.impl;
 
-import com.vbatecan.springboot_jwt.models.entities.User;
-import com.vbatecan.springboot_jwt.repositories.UserRepository;
-import com.vbatecan.springboot_jwt.services.interfaces.UserService;
+import com.vbatecan.portfolio_manager.models.entities.User;
+import com.vbatecan.portfolio_manager.repositories.UserRepository;
+import com.vbatecan.portfolio_manager.services.interfaces.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

@@ -1,6 +1,6 @@
-package com.vbatecan.springboot_jwt.configs;
+package com.vbatecan.portfolio_manager.configs;
 
-import com.vbatecan.springboot_jwt.services.interfaces.UserService;
+import com.vbatecan.portfolio_manager.services.interfaces.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

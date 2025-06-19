@@ -1,7 +1,7 @@
-package com.vbatecan.springboot_jwt.securities;
+package com.vbatecan.portfolio_manager.securities;
 
 
-import com.vbatecan.springboot_jwt.models.entities.User;
+import com.vbatecan.portfolio_manager.models.entities.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;

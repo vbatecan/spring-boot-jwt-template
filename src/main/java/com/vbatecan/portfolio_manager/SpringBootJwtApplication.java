@@ -1,4 +1,4 @@
-package com.vbatecan.springboot_jwt;
+package com.vbatecan.portfolio_manager;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

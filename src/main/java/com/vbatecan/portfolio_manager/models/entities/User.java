@@ -1,7 +1,7 @@
-package com.vbatecan.springboot_jwt.models.entities;
+package com.vbatecan.portfolio_manager.models.entities;
 
-import com.vbatecan.springboot_jwt.models.dto.UserDTO;
-import com.vbatecan.springboot_jwt.models.enums.Role;
+import com.vbatecan.portfolio_manager.models.dto.UserDTO;
+import com.vbatecan.portfolio_manager.models.enums.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

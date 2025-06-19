@@ -1,7 +1,7 @@
-package com.vbatecan.springboot_jwt.securities;
+package com.vbatecan.portfolio_manager.securities;
 
-import com.vbatecan.springboot_jwt.models.entities.User;
-import com.vbatecan.springboot_jwt.services.interfaces.UserService;
+import com.vbatecan.portfolio_manager.models.entities.User;
+import com.vbatecan.portfolio_manager.services.interfaces.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;

@@ -1,4 +1,4 @@
-package com.vbatecan.springboot_jwt.models.enums;
+package com.vbatecan.portfolio_manager.models.enums;
 
 public enum Role {
 	GUEST, PATIENT, DOCTOR, ADMIN

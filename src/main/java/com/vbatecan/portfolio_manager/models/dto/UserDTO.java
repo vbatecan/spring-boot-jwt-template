@@ -1,6 +1,6 @@
-package com.vbatecan.springboot_jwt.models.dto;
+package com.vbatecan.portfolio_manager.models.dto;
 
-import com.vbatecan.springboot_jwt.models.enums.Role;
+import com.vbatecan.portfolio_manager.models.enums.Role;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;

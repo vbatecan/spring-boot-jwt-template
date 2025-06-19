@@ -1,6 +1,6 @@
-package com.vbatecan.springboot_jwt.repositories;
+package com.vbatecan.portfolio_manager.repositories;
 
-import com.vbatecan.springboot_jwt.models.entities.User;
+import com.vbatecan.portfolio_manager.models.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

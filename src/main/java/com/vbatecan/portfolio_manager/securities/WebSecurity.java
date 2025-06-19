@@ -1,4 +1,4 @@
-package com.vbatecan.springboot_jwt.securities;
+package com.vbatecan.portfolio_manager.securities;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
