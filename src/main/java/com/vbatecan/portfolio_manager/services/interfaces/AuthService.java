@@ -1,5 +1,6 @@
 package com.vbatecan.portfolio_manager.services.interfaces;
 
+import com.vbatecan.portfolio_manager.models.entities.User;
 import com.vbatecan.portfolio_manager.models.output.LoginSuccessfulResponse;
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -15,5 +16,7 @@ public interface AuthService {
 	 * @param password the password
 	 * @return an optional user if the credentials match, or an empty optional if they don't
 	 */
-	Optional<LoginSuccessfulResponse> login(@NonNull String username, @NonNull String password)throws UsernameNotFoundException;
+	Optional<LoginSuccessfulResponse> login(@NonNull String username, @NonNull String password) throws UsernameNotFoundException;
+
+	User getLoggedInUser();
 }

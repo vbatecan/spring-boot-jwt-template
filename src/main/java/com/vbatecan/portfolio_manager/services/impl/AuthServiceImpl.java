@@ -1,5 +1,6 @@
 package com.vbatecan.portfolio_manager.services.impl;
 
+import com.vbatecan.portfolio_manager.models.dto.UserDTO;
 import com.vbatecan.portfolio_manager.models.entities.User;
 import com.vbatecan.portfolio_manager.models.output.LoginSuccessfulResponse;
 import com.vbatecan.portfolio_manager.securities.JwtService;
@@ -8,6 +9,9 @@ import com.vbatecan.portfolio_manager.services.interfaces.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.lang.NonNull;
+import org.springframework.security.authorization.AuthorizationDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -33,13 +37,10 @@ public class AuthServiceImpl implements AuthService {
 	@Override
 	public Optional<LoginSuccessfulResponse> login(@NonNull String username, @NonNull String password) throws UsernameNotFoundException {
 		Optional<User> userOptional = userService.findByUsername(username);
-
 		if ( userOptional.isEmpty() ) {
 			throw new UsernameNotFoundException("User not found with username: " + username);
 		}
-
 		User user = userOptional.get();
-
 		if ( passwordEncoder.matches(password, user.getPassword()) ) {
 			String token = jwtService.generateToken(user);
 			Long expiration = jwtService.getTokenExpirationTime(token);
@@ -47,7 +48,17 @@ public class AuthServiceImpl implements AuthService {
 				new LoginSuccessfulResponse(token, user.toDTO(), expiration)
 			);
 		}
-
 		return Optional.empty();
+	}
+
+	@Override
+	public User getLoggedInUser() {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+		if ( authentication != null ) {
+			return ((UserDTO) authentication.getPrincipal()).toEntity();
+		}
+
+		throw new AuthorizationDeniedException("User is not logged in and getLoggedInUser function should not be used to the places that is accessible. Enforce @RolesAllowed and @Authenticated");
 	}
 }
