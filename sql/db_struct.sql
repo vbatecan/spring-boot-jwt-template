@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS projects
 (
     id          UUID        NOT NULL DEFAULT gen_random_uuid(),
     user_id     UUID        NOT NULL,
-    title       VARCHAR     NOT NULL
+    title       VARCHAR     NOT NULL UNIQUE
         CONSTRAINT projects_title_valid_length CHECK ( LENGTH(title) > 0 ),
     description TEXT        NULL
         CONSTRAINT projects_description_valid_length CHECK ( LENGTH(description) > 0 ),
@@ -60,7 +60,7 @@ CREATE TABLE IF NOT EXISTS certificates
 (
     id             UUID        NOT NULL DEFAULT gen_random_uuid(),
     user_id        UUID        NOT NULL,
-    title          VARCHAR     NOT NULL
+    title          VARCHAR     NOT NULL UNIQUE
         CONSTRAINT certificates_title_valid_length CHECK ( LENGTH(title) > 0 ),
     issuer         VARCHAR     NOT NULL
         CONSTRAINT certificates_issuer_valid_length CHECK ( LENGTH(issuer) > 0 ),
@@ -94,7 +94,7 @@ CREATE TABLE IF NOT EXISTS educations
 (
     id          UUID        NOT NULL DEFAULT gen_random_uuid(),
     user_id     UUID        NOT NULL,
-    title       VARCHAR     NOT NULL
+    title       VARCHAR     NOT NULL UNIQUE
         CONSTRAINT educations_title_valid_length CHECK ( LENGTH(title) > 0 ),
     institution VARCHAR     NOT NULL
         CONSTRAINT educations_institution_valid_length CHECK ( LENGTH(institution) > 0 ),
@@ -112,7 +112,7 @@ CREATE TABLE IF NOT EXISTS experiences
 (
     id          UUID        NOT NULL DEFAULT gen_random_uuid(),
     user_id     UUID        NOT NULL,
-    title       VARCHAR     NOT NULL
+    title       VARCHAR     NOT NULL UNIQUE
         CONSTRAINT experiences_title_valid_length CHECK ( LENGTH(title) > 0 ),
     position    VARCHAR     NULL
         CONSTRAINT experiences_position_valid_length CHECK ( LENGTH(position) > 0 ),
