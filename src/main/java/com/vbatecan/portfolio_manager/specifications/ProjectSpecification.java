@@ -1,0 +1,34 @@
+package com.vbatecan.portfolio_manager.specifications;
+
+import com.vbatecan.portfolio_manager.models.entities.Project;
+import com.vbatecan.portfolio_manager.models.filters.ProjectFilterInput;
+import jakarta.persistence.criteria.Predicate;
+import org.springframework.data.jpa.domain.Specification;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class ProjectSpecification {
+
+	public static Specification<Project> filter(ProjectFilterInput filter) {
+		return ((root, query, cb) -> {
+			List<Predicate> predicates = new ArrayList<>();
+
+			if ( filter.title() != null && !filter.title().isBlank() ) {
+				predicates.add(cb.like(
+					cb.lower(root.get("title")),
+					"%" + filter.title().toLowerCase() + "%"
+				));
+			}
+
+			if ( filter.description() != null && !filter.description().isBlank() ) {
+				predicates.add(cb.like(
+					cb.lower(root.get("description")),
+					"%" + filter.description().toLowerCase() + "%"
+				));
+			}
+
+			return cb.and(predicates.toArray(new Predicate[0]));
+		});
+	}
+}
