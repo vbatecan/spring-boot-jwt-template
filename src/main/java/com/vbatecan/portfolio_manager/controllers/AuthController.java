@@ -10,7 +10,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Optional;
 
@@ -23,7 +26,7 @@ public class AuthController {
 
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody @Valid AuthInput login, HttpServletResponse response) {
-		Optional<LoginSuccessfulResponse> successfulResponse = authService.login(login.getUsername(), login.getPassword());
+		Optional<LoginSuccessfulResponse> successfulResponse = authService.login(login.username(), login.password());
 		if ( successfulResponse.isPresent() ) {
 			LoginSuccessfulResponse loginSuccessfulResponse = successfulResponse.get();
 			Cookie cookie = new Cookie("token", loginSuccessfulResponse.token());
@@ -40,7 +43,7 @@ public class AuthController {
 
 	@PostMapping("/logout")
 	public ResponseEntity<?> logout(HttpServletResponse response) {
-		Cookie  cookie = new Cookie("token", null);
+		Cookie cookie = new Cookie("token", null);
 		cookie.setPath("/");
 		cookie.setMaxAge(0);
 		cookie.setDomain("localhost");
