@@ -9,13 +9,14 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
 public interface ProjectRepository extends JpaRepository<Project, UUID>, JpaSpecificationExecutor<Project> {
-	boolean existsByTitle(@NonNull String title);
+	boolean existsByTitleAndUser_Id(String title, UUID userId);
 
-	Page<Project> findByUser_Id(Specification<Project> spec, UUID userId, Pageable pageable);
+	Optional<Project> findByIdAndUser_Id(UUID id, UUID userId);
 
 	Page<Project> findByUser_Id(UUID id, Pageable pageable);
 }

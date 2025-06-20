@@ -32,9 +32,12 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 				String username = jwtService.getUsername(token);
 				Optional<User> user = userService.findByUsername(username);
 
-				// User account is not found in the database so we clear the security context.
+				// User account is not found in the database so we clear the security context and reset cookie
 				if ( user.isEmpty() ) {
 					SecurityContextHolder.clearContext();
+					Cookie cookie = new Cookie("token", null);
+					cookie.setMaxAge(0);
+					response.addCookie(cookie);
 					return;
 				}
 				UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user.get().toDTO(), null, user.get().getAuthorities());
