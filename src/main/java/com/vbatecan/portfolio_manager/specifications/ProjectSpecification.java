@@ -1,6 +1,7 @@
 package com.vbatecan.portfolio_manager.specifications;
 
 import com.vbatecan.portfolio_manager.models.entities.Project;
+import com.vbatecan.portfolio_manager.models.entities.User;
 import com.vbatecan.portfolio_manager.models.filters.ProjectFilterInput;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
@@ -10,7 +11,7 @@ import java.util.List;
 
 public class ProjectSpecification {
 
-	public static Specification<Project> filter(ProjectFilterInput filter) {
+	public static Specification<Project> filter(ProjectFilterInput filter, User user) {
 		return ((root, query, cb) -> {
 			List<Predicate> predicates = new ArrayList<>();
 
@@ -28,6 +29,8 @@ public class ProjectSpecification {
 				));
 			}
 
+			// ! Check if the project is owned by the current user to prevent other users access.
+			predicates.add(cb.equal(root.get("user").get("id"), user.getId()));
 			return cb.and(predicates.toArray(new Predicate[0]));
 		});
 	}
