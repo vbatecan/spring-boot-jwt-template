@@ -23,10 +23,6 @@ public class ProjectsUpload {
 	@Column(name = "url", nullable = false, length = Integer.MAX_VALUE)
 	private String url;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "project_id", nullable = false)
-	private Project project;
-
 	@NotNull
 	@ColumnDefault("now()")
 	@Column(name = "created_at", nullable = false)
