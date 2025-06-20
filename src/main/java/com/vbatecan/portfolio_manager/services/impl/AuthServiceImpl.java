@@ -55,7 +55,7 @@ public class AuthServiceImpl implements AuthService {
 	public User getLoggedInUser() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-		if ( authentication != null ) {
+		if ( authentication != null && authentication.getPrincipal() instanceof UserDTO ) {
 			return ((UserDTO) authentication.getPrincipal()).toEntity();
 		}
 

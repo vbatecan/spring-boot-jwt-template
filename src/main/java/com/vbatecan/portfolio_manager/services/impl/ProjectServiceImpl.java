@@ -2,8 +2,6 @@ package com.vbatecan.portfolio_manager.services.impl;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.vbatecan.portfolio_manager.exceptions.UserInvalidMatchException;
-import com.vbatecan.portfolio_manager.models.dto.UserDTO;
 import com.vbatecan.portfolio_manager.models.entities.Project;
 import com.vbatecan.portfolio_manager.models.entities.User;
 import com.vbatecan.portfolio_manager.models.filters.ProjectFilterInput;
@@ -11,13 +9,13 @@ import com.vbatecan.portfolio_manager.repositories.ProjectRepository;
 import com.vbatecan.portfolio_manager.services.interfaces.AuthService;
 import com.vbatecan.portfolio_manager.services.interfaces.ProjectService;
 import com.vbatecan.portfolio_manager.specifications.ProjectSpecification;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -32,7 +30,6 @@ public class ProjectServiceImpl implements ProjectService {
 	private final AuthService authService;
 
 	@Override
-	@Transactional
 	public Page<Project> listAll(@NonNull Pageable pageable) {
 		User user = authService.getLoggedInUser();
 		return projectRepository.findByUser_Id(user.getId(), pageable);
@@ -40,63 +37,56 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Override
 	public Optional<Project> save(@NonNull Project project) {
-		if ( projectRepository.existsByTitle(project.getTitle()) ) return Optional.empty();
-		project.setUser(authService.getLoggedInUser());
+		User user = authService.getLoggedInUser();
+		if ( projectRepository.existsByTitleAndUser_Id(project.getTitle(), user.getId()) ) return Optional.empty();
+		project.setUser(user);
 		return Optional.of(projectRepository.save(project));
 	}
 
 	@Override
-	public Optional<Project> delete(@NonNull UUID id) throws UserInvalidMatchException {
-		Optional<Project> projectOptional = projectRepository.findById(id);
+	public Optional<Project> delete(@NonNull UUID id) {
+		User user = authService.getLoggedInUser();
+
+		Optional<Project> projectOptional = projectRepository.findByIdAndUser_Id(id, user.getId());
 		if ( projectOptional.isEmpty() ) {
 			return Optional.empty();
 		}
 
 		Project project = projectOptional.get();
-		if ( project.getUser().getId().equals(authService.getLoggedInUser().getId()) ) {
-			projectRepository.delete(project);
-		}
-
-		throw new UserInvalidMatchException("The user of the project id from the input did not match from the currently logged in user.");
+		projectRepository.delete(project);
+		return projectOptional;
 	}
 
 	@Override
-	public Optional<Project> update(@NonNull UUID id, @NonNull Project updatedProject) throws JsonMappingException, UserInvalidMatchException {
-		Optional<Project> projectOptional = projectRepository.findById(id);
+	public Optional<Project> update(@NonNull UUID id, @NonNull Project updatedProject) throws JsonMappingException {
+		User user = authService.getLoggedInUser();
+		Optional<Project> projectOptional = projectRepository.findByIdAndUser_Id(id, user.getId());
 
 		if ( projectOptional.isEmpty() ) {
 			return Optional.empty();
 		}
 
 		Project project = projectOptional.get();
-
-		if ( project.getUser().getId().equals(authService.getLoggedInUser().getId()) ) {
-			project = mapper.updateValue(project, updatedProject);
-			return Optional.of(projectRepository.save(project));
-		}
-
-		throw new UserInvalidMatchException("The user of the project id from the input did not match from the currently logged in user id.");
+		project = mapper.updateValue(project, updatedProject);
+		return Optional.of(projectRepository.save(project));
 	}
 
 	@Override
-	public Optional<Project> get(@NonNull UUID id) throws UserInvalidMatchException {
-		Optional<Project> projectOptional = projectRepository.findById(id);
+	public Optional<Project> get(@NonNull UUID id) {
+		User user = authService.getLoggedInUser();
+		Optional<Project> projectOptional = projectRepository.findByIdAndUser_Id(id, user.getId());
 
 		if ( projectOptional.isEmpty() ) {
 			return Optional.empty();
 		}
 
 		Project project = projectOptional.get();
-		if ( project.getUser().getId().equals(authService.getLoggedInUser().getId()) ) {
-			return Optional.of(project);
-		}
-
-		throw new UserInvalidMatchException("The user of the project id from the input did not match from the currently logged in user id.");
+		return Optional.of(project);
 	}
 
 	@Override
 	public Page<Project> filter(@NonNull ProjectFilterInput filter, Pageable pageable) {
 		User user = authService.getLoggedInUser();
-		return projectRepository.findByUser_Id(ProjectSpecification.filter(filter), user.getId(), pageable);
+		return projectRepository.findAll(ProjectSpecification.filter(filter, user), pageable);
 	}
 }
