@@ -6,43 +6,26 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 
-import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Getter
 @Setter
 @Entity
-@Table(name = "experiences")
-public class Experience {
+@Table(name = "projects_uploads")
+public class ProjectsUpload {
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
 	@Column(name = "id", nullable = false)
 	private UUID id;
 
 	@NotNull
+	@Column(name = "url", nullable = false, length = Integer.MAX_VALUE)
+	private String url;
+
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "user_id", nullable = false)
-	private User user;
-
-	@NotNull
-	@Column(name = "title", nullable = false, length = Integer.MAX_VALUE)
-	private String title;
-
-	@Column(name = "position", length = Integer.MAX_VALUE)
-	private String position;
-
-	@Column(name = "company", length = Integer.MAX_VALUE)
-	private String company;
-
-	@Column(name = "start_date")
-	private LocalDate startDate;
-
-	@Column(name = "end_date")
-	private LocalDate endDate;
-
-	@Column(name = "description", length = Integer.MAX_VALUE)
-	private String description;
+	@JoinColumn(name = "project_id", nullable = false)
+	private Project project;
 
 	@NotNull
 	@ColumnDefault("now()")

@@ -7,6 +7,7 @@ import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -23,6 +24,9 @@ public class Project {
 	@JoinColumn(name = "user_id", nullable = false)
 	private User user;
 
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "project")
+	private List<ProjectsUpload> projectsUploads;
+
 	@NotNull
 	@Column(name = "title", nullable = false, length = Integer.MAX_VALUE)
 	private String title;
@@ -34,6 +38,7 @@ public class Project {
 	@ColumnDefault("now()")
 	@Column(name = "created_at", nullable = false)
 	private OffsetDateTime createdAt;
+
 	@NotNull
 	@ColumnDefault("now()")
 	@Column(name = "updated_at", nullable = false)
