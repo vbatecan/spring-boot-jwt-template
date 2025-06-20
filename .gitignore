@@ -35,3 +35,4 @@ build/
 ### OTHERS ###
 .env
 .env*
+.aider*
