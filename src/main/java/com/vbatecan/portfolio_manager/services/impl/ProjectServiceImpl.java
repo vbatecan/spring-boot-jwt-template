@@ -2,6 +2,7 @@ package com.vbatecan.portfolio_manager.services.impl;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.vbatecan.portfolio_manager.models.dto.ProjectDTO;
 import com.vbatecan.portfolio_manager.models.entities.Project;
 import com.vbatecan.portfolio_manager.models.entities.User;
 import com.vbatecan.portfolio_manager.models.filters.ProjectFilterInput;
@@ -32,20 +33,20 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public Page<Project> listAll(@NonNull Pageable pageable) {
+	public Page<ProjectDTO> listAll(@NonNull Pageable pageable) {
 		User user = authService.getLoggedInUser();
-		Page<Project> projectOptional = projectRepository.findByUser_Id(user.getId(), pageable);
-		projectOptional.getContent().forEach(project -> {
+		Page<ProjectDTO> projectPage = projectRepository.findByUser_Id(user.getId(), pageable);
+		projectPage.getContent().forEach(project -> {
 			assert project.getUploads() != null;
 			project.getUploads().size();
 		});
 
-		return projectOptional;
+		return projectPage;
 	}
 
 	@Override
 	@Transactional
-	public Optional<Project> save(@NonNull Project project) {
+	public Optional<ProjectDTO> save(@NonNull Project project) {
 		User user = authService.getLoggedInUser();
 		if ( projectRepository.existsByTitleAndUser_Id(project.getTitle(), user.getId()) ) return Optional.empty();
 		project.setUser(user);
@@ -86,7 +87,9 @@ public class ProjectServiceImpl implements ProjectService {
 	@Override
 	public Optional<Project> get(@NonNull UUID id) {
 		User user = authService.getLoggedInUser();
-		return projectRepository.findByIdAndUser_Id(id, user.getId());
+		Optional<Project> projectOptional = projectRepository.findByIdAndUser_Id(id, user.getId());
+
+		return projectOptional;
 	}
 
 	@Override

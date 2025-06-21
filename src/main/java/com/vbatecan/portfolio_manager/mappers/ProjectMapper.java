@@ -10,10 +10,12 @@ import com.vbatecan.portfolio_manager.models.input.ProjectInput;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import java.util.function.Function;
+
 @Mapper(componentModel = "spring")
 public interface ProjectMapper {
 
-	ProjectDTO toDTO(Project project);
+	Function<? super ProjectDTO, ? extends ProjectDTO> toDTO(ProjectDTO project);
 
 	Project toEntity(ProjectDTO dto);
 

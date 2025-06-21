@@ -1,5 +1,6 @@
 package com.vbatecan.portfolio_manager.repositories;
 
+import com.vbatecan.portfolio_manager.models.dto.ProjectDTO;
 import com.vbatecan.portfolio_manager.models.entities.Project;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,8 +16,9 @@ import java.util.UUID;
 public interface ProjectRepository extends JpaRepository<Project, UUID>, JpaSpecificationExecutor<Project> {
 	boolean existsByTitleAndUser_Id(String title, UUID userId);
 
+	@EntityGraph(attributePaths = {"user", "uploads"})
 	Optional<Project> findByIdAndUser_Id(UUID id, UUID userId);
 
-	@EntityGraph(attributePaths = {"user"})
-	Page<Project> findByUser_Id(UUID id, Pageable pageable);
+	@EntityGraph(attributePaths = {"user", "uploads"})
+	Page<ProjectDTO> findByUser_Id(UUID id, Pageable pageable);
 }

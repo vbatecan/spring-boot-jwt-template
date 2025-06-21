@@ -1,6 +1,7 @@
 package com.vbatecan.portfolio_manager.services.interfaces;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.vbatecan.portfolio_manager.models.dto.ProjectDTO;
 import com.vbatecan.portfolio_manager.models.entities.Project;
 import com.vbatecan.portfolio_manager.models.filters.ProjectFilterInput;
 import org.springframework.data.domain.Page;
@@ -14,10 +15,10 @@ import java.util.UUID;
 
 public interface ProjectService {
 
-	Page<Project> listAll(@NonNull Pageable pageable);
+	Page<ProjectDTO> listAll(@NonNull Pageable pageable);
 
 	@Transactional
-	Optional<Project> save(@NonNull Project project);
+	Optional<ProjectDTO> save(@NonNull Project project);
 
 	@Transactional
 	Optional<Project> update(@NonNull UUID id, @NonNull Project updatedProject) throws JsonMappingException;

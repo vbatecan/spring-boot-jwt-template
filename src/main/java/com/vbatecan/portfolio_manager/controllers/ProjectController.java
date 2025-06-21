@@ -2,6 +2,7 @@ package com.vbatecan.portfolio_manager.controllers;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.vbatecan.portfolio_manager.mappers.ProjectMapper;
+import com.vbatecan.portfolio_manager.models.dto.ProjectDTO;
 import com.vbatecan.portfolio_manager.models.entities.Project;
 import com.vbatecan.portfolio_manager.models.input.ProjectInput;
 import com.vbatecan.portfolio_manager.models.output.MessageResponse;
@@ -39,7 +40,7 @@ public class ProjectController {
 	@PostMapping("")
 	public ResponseEntity<?> save(@NonNull @RequestBody @Valid ProjectInput projectInput) {
 		Project project = projectMapper.toEntity(projectInput);
-		Optional<Project> projectOptional = projectService.save(
+		Optional<ProjectDTO> projectOptional = projectService.save(
 			project
 		);
 
