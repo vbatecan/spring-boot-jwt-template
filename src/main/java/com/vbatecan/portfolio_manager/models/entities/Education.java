@@ -1,9 +1,9 @@
 package com.vbatecan.portfolio_manager.models.entities;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
@@ -28,12 +28,12 @@ public class Education {
 
 	@NotNull
 	@Column(name = "title", nullable = false, length = Integer.MAX_VALUE)
-	@Max(value = 255, message = "Title should be less than 255 characters.")
+	@Size(max = 255, message = "Title should be less than 255 characters.")
 	private String title;
 
 	@NotNull
 	@Column(name = "institution", nullable = false, length = Integer.MAX_VALUE)
-	@Max(value = 255, message = "Institution should be less than 255 characters.")
+	@Size(max = 255, message = "Institution should be less than 255 characters.")
 	private String institution;
 
 	@NotNull
@@ -46,7 +46,7 @@ public class Education {
 	private LocalDate endDate;
 
 	@Column(name = "description", length = Integer.MAX_VALUE)
-	@Max(value = 10000, message = "Description should be less than 10000 characters.")
+	@Size(max = 10000, message = "Description should be less than 10000 characters.")
 	private String description;
 
 	@NotNull
@@ -60,4 +60,15 @@ public class Education {
 	@Column(name = "updated_at", nullable = false)
 	@PastOrPresent
 	private OffsetDateTime updatedAt;
+
+	@PrePersist
+	public void prePersist() {
+		this.createdAt = OffsetDateTime.now();
+		this.updatedAt = OffsetDateTime.now();
+	}
+
+	@PreUpdate
+	public void preUpdate() {
+		this.updatedAt = OffsetDateTime.now();
+	}
 }
