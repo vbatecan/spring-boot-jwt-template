@@ -1,0 +1,141 @@
+# AI Development Guide: Creating a New Feature
+
+This document provides rules and instructions for an AI to create new features within this application. The goal is to ensure consistency, security, and maintainability by replicating the architectural patterns established by the `Project` feature.
+
+## Core Principles
+
+1.  **Separation of Concerns**: Each layer (Controller, Service, Repository) has a single, well-defined responsibility.
+2.  **Security First**: All data access must be scoped to the currently authenticated user. There are no exceptions.
+3.  **API Contract Decoupling**: The internal data model (JPA Entity) is never exposed to the client. We use `Input` and `DTO` objects for API communication.
+4.  **Service-Centric Logic**: The Service layer contains all business rules, validation, and transaction management. The Controller is a thin layer that only handles HTTP traffic.
+
+---
+
+## Step-by-Step Instructions to Build a New Feature (e.g., "Task")
+
+### Step 1: Create the Data Model (Entity)
+
+1.  Create a new JPA entity class (e.g., `Task.java`).
+2.  Annotate it with `@Entity`, `@Getter`, `@Setter`, etc.
+3.  **Rule**: The entity **must** have a `ManyToOne` relationship with the `User` entity to enforce data ownership.
+
+    ```java
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+    ```
+
+4.  Include `@PrePersist` and `@PreUpdate` methods for `createdAt` and `updatedAt` timestamps, following the `Project` entity's example.
+
+### Step 2: Create the Repository Layer
+
+1.  Create a new repository interface (e.g., `TaskRepository.java`).
+2.  It must extend `JpaRepository<Task, UUID>` and `JpaSpecificationExecutor<Task>`. The `JpaSpecificationExecutor` is required for advanced, dynamic filtering.
+3.  **CRITICAL RULE**: All custom query methods must be scoped by the user's ID (`userId`) to prevent data leakage between tenants.
+
+    *   **For checking existence**: `boolean existsByTitleAndUser_Id(String title, UUID userId);`
+    *   **For finding a single entity**: `Optional<Task> findByIdAndUser_Id(UUID id, UUID userId);`
+    *   **For listing all entities for a user**: `Page<Task> findByUser_Id(UUID userId, Pageable pageable);`
+
+### Step 3: Create the API Data Contracts (Input/DTO/Filter) and Mappers
+Naming DTO should be capitalized, instead of `Dto`, it should be `DTO`
+
+1.  **Input Object**: Create a record or class for request data (e.g., `TaskInput.java`). This is used in `POST`/`PUT` request bodies. Use Jakarta Validation annotations (`@NotBlank`, etc.).
+2.  **DTO Object**: Create a record or class for response data (e.g., `TaskDTO.java`). This object defines the public view of your entity.
+3.  **Filter Input Object**: Create a record for filtering parameters (e.g., `TaskFilterInput.java`). Its fields should match the entity fields you want to filter by.
+4.  **Mappers**: Create mapper interfaces (e.g., `TaskMapper`, `TaskInputMapper`) to handle conversion between `TaskInput` -> `Task` and `Task` -> `TaskDTO`.
+5. **Naming**: Use a consistent naming convention for all objects. For example, `TaskInput` and `TaskInputMapper` might be named `TaskInput` and `TaskInputMapper` because it's a request object.
+6. **CRITICAL RULE**: All mappers must be scoped by the user's ID (`userId`) to prevent data leakage between tenants.
+
+    ```java
+    // Example: TaskMapper.java
+    @Mapper(componentModel = "spring")
+    public interface TaskMapper {
+        Task map(TaskInput taskInput);
+        TaskDTO map(Task task);
+        // ... other mappings
+    }
+    ```
+
+### Step 4: Create the Service Layer (Business Logic)
+
+#### A. Service Interface (`TaskService.java`)
+
+1.  Define the public contract for the feature.
+2.  **Rule**: Methods that retrieve or modify a single, specific entity (`get`, `update`, `delete`) **must** return an `Optional<TaskDTO>`.
+3.  **Rule**: Methods that list multiple entities (`listAll`, `filter`) **must** return a `Page<TaskDTO>`.
+4.  Annotate methods with `@Transactional`. Use `@Transactional(readOnly = true)` for all read-only operations (`get`, `listAll`, `filter`).
+
+    ```java
+    // Example: TaskService.java
+    public interface TaskService {
+        Page<TaskDTO> listAll(@NonNull Pageable pageable);
+        Optional<TaskDTO> save(@NonNull TaskInput taskInput);
+        // ... other methods
+        Page<TaskDTO> filter(@NonNull TaskFilterInput filter, Pageable pageable);
+    }
+    ```
+
+#### B. Service Implementation (`TaskServiceImpl.java`)
+
+1.  Implement the service interface. Annotate the class with `@Service` and `@RequiredArgsConstructor`.
+2.  Inject the `TaskRepository`, mappers, and `AuthService`.
+3.  **CRITICAL RULE**: The first line of code in **every public method** must be to retrieve the currently authenticated user: `User user = authService.getLoggedInUser();`.
+4.  Implement the standard CRUD methods (`save`, `update`, `delete`, `get`, `listAll`) following the pattern in `ProjectServiceImpl`.
+5.  Implement the `filter` method (see Step 6 for details).
+
+### Step 5: Create the Controller Layer (API Endpoints)
+
+1.  Create a new `@RestController` class (e.g., `TaskController.java`).
+2.  Set the base path with `@RequestMapping("/api/v1/tasks")`.
+3.  Inject the service interface (`TaskService`), not the implementation.
+4.  **Rule**: The controller contains **no business logic**. Its only job is to delegate to the service and translate the service's response into an HTTP response.
+5.  Implement the standard CRUD endpoints (`GET`, `POST`, `PUT`, `DELETE`). For operations that can fail, check the `Optional` from the service and return an appropriate `2xx` or `4xx` `ResponseEntity`.
+6.  Implement the filter endpoint (see Step 6 for details).
+
+### Step 6: Implement Filtering with Specifications
+
+This is the standard pattern for building dynamic, type-safe queries.
+
+#### A. Create the Specification Class
+
+1.  Create a new final class, `TaskSpecification.java`. It is a utility class, not a Spring bean.
+2.  Create a `public static Specification<Task> filter(TaskFilterInput filter, User user)` method.
+3.  **Rule**: The method must accept the filter input object and the authenticated `User` object.
+4.  Inside the method:
+    *   Instantiate an `ArrayList<Predicate>`.
+    *   For each field in the `filter` object, check if it's non-null and non-blank. If it is, create and add a `Predicate` to the list. Use `cb.lower` for case-insensitive string matching.
+        ```java
+        if ( filter.title() != null && !filter.title().isBlank() ) {
+            predicates.add(cb.like(cb.lower(root.get("title")), "%" + filter.title().toLowerCase() + "%"));
+        }
+        ```
+    *   **CRITICAL SECURITY RULE**: Always add a predicate to enforce data ownership. This is mandatory.
+        ```java
+        predicates.add(cb.equal(root.get("user").get("id"), user.getId()));
+        ```
+    *   Return the combined predicates: `return cb.and(predicates.toArray(new Predicate[0]));`.
+
+#### B. Update the Service Implementation
+
+1.  In `TaskServiceImpl.java`, implement the `filter` method.
+2.  Get the authenticated user: `User user = authService.getLoggedInUser();`.
+3.  Call the specification to build the query: `Specification<Task> spec = TaskSpecification.filter(filter, user);`.
+4.  Execute the query using the repository: `Page<Task> tasks = taskRepository.findAll(spec, pageable);`.
+5.  Map the `Page<Task>` to a `Page<TaskDTO>` and return it, just like in the `listAll` method.
+
+#### C. Create the Filter Endpoint in the Controller
+
+1.  In `TaskController.java`, add a new `GET` mapping for filtering. It can share the root path and rely on query parameters.
+2.  The method should accept the `TaskFilterInput` object and a `Pageable` object. Spring will automatically map the request's query parameters (e.g., `?title=...&description=...`) to the fields of the `TaskFilterInput` record.
+
+    ```java
+    // Example in TaskController.java
+    @GetMapping("/filter") // Or another appropriate path
+    public ResponseEntity<PagedModel<TaskDTO>> filter(
+        @NonNull TaskFilterInput filter,
+        @NonNull @PageableDefault Pageable pageable) {
+        Page<TaskDTO> tasks = taskService.filter(filter, pageable);
+        return ResponseEntity.ok(new PagedModel<>(tasks));
+    }
+    ```
