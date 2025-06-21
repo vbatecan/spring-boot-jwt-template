@@ -48,7 +48,7 @@ Naming DTO should be capitalized, instead of `Dto`, it should be `DTO`
     *   **Example**:
         ```java
         // Example: TaskMapper.java
-        @Mapper(componentModel = "spring")
+        @Mapper(componentModel = "spring", uses = {... (Add other mappers if the entity has relationships) ...})
         public interface TaskMapper {
             TaskDTO toDto(Task task);
             Task toEntity(TaskInput taskInput);
@@ -83,6 +83,7 @@ Naming DTO should be capitalized, instead of `Dto`, it should be `DTO`
 3.  **CRITICAL RULE**: The first line of code in **every public method** must be to retrieve the currently authenticated user: `User user = authService.getLoggedInUser();`.
 4.  Implement the standard CRUD methods (`save`, `update`, `delete`, `get`, `listAll`) following the pattern in `ProjectServiceImpl`.
 5.  Implement the `filter` method (see Step 6 for details).
+6.  When checking for existence, return Optional.empty() instead.
 
 ### Step 5: Create the Controller Layer (API Endpoints)
 
