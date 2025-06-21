@@ -30,7 +30,6 @@ public class ProjectController {
 	private final ProjectService projectService;
 
 	@GetMapping("")
-	@Transactional(readOnly = true)
 	public ResponseEntity<?> listAll(@NonNull @PageableDefault Pageable pageable) {
 		return ResponseEntity.ok(
 			new PagedModel<>(projectService.listAll(pageable).map(projectMapper::toDTO))
@@ -67,6 +66,16 @@ public class ProjectController {
 	@DeleteMapping("")
 	public ResponseEntity<?> delete(@NonNull @RequestParam UUID id) {
 		Optional<Project> projectOptional = projectService.delete(id);
+		if ( projectOptional.isPresent() ) {
+			return ResponseEntity.ok(projectMapper.toDTO(projectOptional.get()));
+		}
+
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("Project " + id + " not found", false));
+	}
+
+	@GetMapping("/{id}")
+	public ResponseEntity<?> get(@NonNull @PathVariable("id") UUID id) {
+		Optional<Project> projectOptional = projectService.get(id);
 		if ( projectOptional.isPresent() ) {
 			return ResponseEntity.ok(projectMapper.toDTO(projectOptional.get()));
 		}

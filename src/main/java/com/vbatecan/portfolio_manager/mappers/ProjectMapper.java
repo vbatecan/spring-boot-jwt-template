@@ -14,11 +14,19 @@ import org.mapstruct.Mapping;
 public interface ProjectMapper {
 
 	ProjectDTO toDTO(Project project);
+
 	Project toEntity(ProjectDTO dto);
+
 	UserDTO toDTO(User user);
+
+	@Mapping(target = "password", ignore = true)
 	User toEntity(UserDTO userDTO);
+
 	ProjectsUploadDTO toDTO(ProjectsUpload upload);
+
 	ProjectsUpload toEntity(ProjectsUploadDTO uploadDTO);
+
 	Project toEntity(ProjectInput projectInput);
+
 	ProjectDTO toDTO(ProjectInput projectInput);
 }

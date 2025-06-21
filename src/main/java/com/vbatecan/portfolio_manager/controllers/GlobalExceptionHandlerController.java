@@ -47,8 +47,8 @@ public class GlobalExceptionHandlerController {
 		return ResponseEntity.badRequest().body(new MessageResponse(ex.getMessage(), false));
 	}
 
-	@ExceptionHandler(Exception.class)
-	public ResponseEntity<?> handleGenericException(Exception ex) {
-		return ResponseEntity.badRequest().body(new MessageResponse(ex.getMessage(), false));
-	}
+//	@ExceptionHandler(Exception.class)
+//	public ResponseEntity<?> handleGenericException(Exception ex) {
+//		return ResponseEntity.badRequest().body(new MessageResponse(ex.getMessage(), false));
+//	}
 }
