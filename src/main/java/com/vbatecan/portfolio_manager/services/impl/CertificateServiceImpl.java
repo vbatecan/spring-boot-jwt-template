@@ -5,7 +5,7 @@ import com.vbatecan.portfolio_manager.mappers.CertificateMapper;
 import com.vbatecan.portfolio_manager.models.dto.CertificateDTO;
 import com.vbatecan.portfolio_manager.models.entities.Certificate;
 import com.vbatecan.portfolio_manager.models.entities.User;
-import com.vbatecan.portfolio_manager.models.input.CertificateFilterInput;
+import com.vbatecan.portfolio_manager.models.filters.CertificateFilterInput;
 import com.vbatecan.portfolio_manager.models.input.CertificateInput;
 import com.vbatecan.portfolio_manager.repositories.CertificateRepository;
 import com.vbatecan.portfolio_manager.services.interfaces.AuthService;
@@ -38,7 +38,7 @@ public class CertificateServiceImpl implements CertificateService {
         User user = authService.getLoggedInUser();
         Page<Certificate> certificates = certificateRepository.findByUser_Id(user.getId(), pageable);
         List<CertificateDTO> dtos = certificates.getContent().stream()
-                .map(certificateMapper::toDto)
+                .map(certificateMapper::toDTO)
                 .collect(Collectors.toList());
         return new PageImpl<>(dtos, pageable, certificates.getTotalElements());
     }
@@ -47,7 +47,7 @@ public class CertificateServiceImpl implements CertificateService {
     public Optional<CertificateDTO> get(@NonNull UUID id) {
         User user = authService.getLoggedInUser();
         return certificateRepository.findByIdAndUser_Id(id, user.getId())
-                .map(certificateMapper::toDto);
+                .map(certificateMapper::toDTO);
     }
 
     @Override
@@ -59,7 +59,7 @@ public class CertificateServiceImpl implements CertificateService {
         Certificate certificate = certificateInputMapper.toEntity(certificateInput);
         certificate.setUser(user);
         Certificate savedCertificate = certificateRepository.save(certificate);
-        return Optional.of(certificateMapper.toDto(savedCertificate));
+        return Optional.of(certificateMapper.toDTO(savedCertificate));
     }
 
     @Override
@@ -69,7 +69,7 @@ public class CertificateServiceImpl implements CertificateService {
                 .map(existingCertificate -> {
                     certificateInputMapper.updateEntityFromInput(certificateInput, existingCertificate);
                     Certificate updatedCertificate = certificateRepository.save(existingCertificate);
-                    return certificateMapper.toDto(updatedCertificate);
+                    return certificateMapper.toDTO(updatedCertificate);
                 });
     }
 
@@ -81,7 +81,7 @@ public class CertificateServiceImpl implements CertificateService {
             return Optional.empty();
         }
         Certificate certificate = certificateOpt.get();
-        CertificateDTO dto = certificateMapper.toDto(certificate);
+        CertificateDTO dto = certificateMapper.toDTO(certificate);
         certificateRepository.delete(certificate);
         return Optional.of(dto);
     }
@@ -92,7 +92,7 @@ public class CertificateServiceImpl implements CertificateService {
         Specification<Certificate> spec = CertificateSpecification.filter(filter, user);
         Page<Certificate> certificates = certificateRepository.findAll(spec, pageable);
         List<CertificateDTO> dtos = certificates.getContent().stream()
-                .map(certificateMapper::toDto)
+                .map(certificateMapper::toDTO)
                 .collect(Collectors.toList());
         return new PageImpl<>(dtos, pageable, certificates.getTotalElements());
     }

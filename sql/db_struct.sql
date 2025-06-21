@@ -66,9 +66,9 @@ CREATE TABLE IF NOT EXISTS certificates
         CONSTRAINT certificates_issuer_valid_length CHECK ( LENGTH(issuer) > 0 ),
     credential_id  VARCHAR     NOT NULL
         CONSTRAINT certificates_credentialId_valid_length CHECK ( LENGTH(credential_id) > 0 ),
-    credential_url VARCHAR     NOT NULL
+    credential_url VARCHAR     NULL
         CONSTRAINT certificates_credentialUrl_valid_length CHECK ( LENGTH(credential_url) > 0 ),
-    image          VARCHAR     NOT NULL
+    image          VARCHAR     NULL
         CONSTRAINT certificates_image_valid_length CHECK ( LENGTH(image) > 0 ),
     description    TEXT        NULL
         CONSTRAINT certificates_description_valid_length CHECK ( LENGTH(description) > 0 ),

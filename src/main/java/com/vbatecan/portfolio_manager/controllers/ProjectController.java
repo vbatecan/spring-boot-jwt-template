@@ -2,6 +2,7 @@ package com.vbatecan.portfolio_manager.controllers;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.vbatecan.portfolio_manager.models.dto.ProjectDTO;
+import com.vbatecan.portfolio_manager.models.filters.ProjectFilterInput;
 import com.vbatecan.portfolio_manager.models.input.ProjectInput;
 import com.vbatecan.portfolio_manager.models.output.MessageResponse;
 import com.vbatecan.portfolio_manager.services.interfaces.ProjectService;
@@ -77,5 +78,11 @@ public class ProjectController {
 
 		return ResponseEntity.status(HttpStatus.NOT_FOUND)
 			.body(new MessageResponse("Project " + id + " not found", false));
+	}
+
+	@GetMapping("/filter")
+	public ResponseEntity<?> filter(@NonNull @RequestBody @Valid ProjectFilterInput filter, @PageableDefault Pageable pageable) {
+		Page<ProjectDTO> projects = projectService.filter(filter, pageable);
+		return ResponseEntity.ok(new PagedModel<>(projects));
 	}
 }

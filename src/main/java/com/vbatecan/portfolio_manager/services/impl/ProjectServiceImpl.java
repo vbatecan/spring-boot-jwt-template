@@ -2,6 +2,7 @@ package com.vbatecan.portfolio_manager.services.impl;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.util.BeanUtil;
 import com.vbatecan.portfolio_manager.mappers.ProjectInputMapper;
 import com.vbatecan.portfolio_manager.mappers.ProjectMapper;
 import com.vbatecan.portfolio_manager.models.dto.ProjectDTO;
@@ -15,6 +16,7 @@ import com.vbatecan.portfolio_manager.services.interfaces.ProjectService;
 import com.vbatecan.portfolio_manager.specifications.ProjectSpecification;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -77,11 +79,8 @@ public class ProjectServiceImpl implements ProjectService {
 			return Optional.empty();
 		}
 
-		Project updatedProject = mapper.updateValue(
-			projectOptional.get(),
-			projectInputMapper.toEntity(projectInput)
-		);
-		Project savedProject = projectRepository.save(updatedProject);
+		BeanUtils.copyProperties(projectInput, projectOptional.get());
+		Project savedProject = projectRepository.save(projectOptional.get());
 		return Optional.of(projectMapper.toDTO(savedProject));
 	}
 

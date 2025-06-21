@@ -6,5 +6,5 @@ import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface CertificateMapper {
-    CertificateDTO toDto(Certificate certificate);
+    CertificateDTO toDTO(Certificate certificate);
 }

@@ -1,7 +1,7 @@
 package com.vbatecan.portfolio_manager.services.interfaces;
 
 import com.vbatecan.portfolio_manager.models.dto.CertificateDTO;
-import com.vbatecan.portfolio_manager.models.input.CertificateFilterInput;
+import com.vbatecan.portfolio_manager.models.filters.CertificateFilterInput;
 import com.vbatecan.portfolio_manager.models.input.CertificateInput;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

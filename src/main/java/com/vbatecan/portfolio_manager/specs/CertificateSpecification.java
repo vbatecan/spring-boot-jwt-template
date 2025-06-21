@@ -2,7 +2,7 @@ package com.vbatecan.portfolio_manager.specs;
 
 import com.vbatecan.portfolio_manager.models.entities.Certificate;
 import com.vbatecan.portfolio_manager.models.entities.User;
-import com.vbatecan.portfolio_manager.models.input.CertificateFilterInput;
+import com.vbatecan.portfolio_manager.models.filters.CertificateFilterInput;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.NonNull;

@@ -1,4 +1,4 @@
-package com.vbatecan.portfolio_manager.models.input;
+package com.vbatecan.portfolio_manager.models.filters;
 
 public record CertificateFilterInput(
     String title,
