@@ -5,6 +5,7 @@ import com.vbatecan.portfolio_manager.models.entities.Project;
 import com.vbatecan.portfolio_manager.models.filters.ProjectFilterInput;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.lang.NonNull;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,7 +14,6 @@ import java.util.UUID;
 
 public interface ProjectService {
 
-	@Transactional(readOnly = true)
 	Page<Project> listAll(@NonNull Pageable pageable);
 
 	@Transactional

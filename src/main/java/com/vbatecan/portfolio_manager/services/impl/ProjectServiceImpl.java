@@ -17,6 +17,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -30,17 +31,28 @@ public class ProjectServiceImpl implements ProjectService {
 	private final AuthService authService;
 
 	@Override
+	@Transactional(readOnly = true)
 	public Page<Project> listAll(@NonNull Pageable pageable) {
 		User user = authService.getLoggedInUser();
-		return projectRepository.findByUser_Id(user.getId(), pageable);
+		Page<Project> projectOptional = projectRepository.findByUser_Id(user.getId(), pageable);
+		projectOptional.getContent().forEach(project -> {
+			assert project.getUploads() != null;
+			project.getUploads().size();
+		});
+
+		return projectOptional;
 	}
 
 	@Override
+	@Transactional
 	public Optional<Project> save(@NonNull Project project) {
 		User user = authService.getLoggedInUser();
 		if ( projectRepository.existsByTitleAndUser_Id(project.getTitle(), user.getId()) ) return Optional.empty();
 		project.setUser(user);
-		return Optional.of(projectRepository.save(project));
+		project.setCreatedAt(OffsetDateTime.now());
+		project.setUpdatedAt(OffsetDateTime.now());
+		Project projectSaved = projectRepository.save(project);
+		return Optional.of(projectSaved);
 	}
 
 	@Override
@@ -74,14 +86,7 @@ public class ProjectServiceImpl implements ProjectService {
 	@Override
 	public Optional<Project> get(@NonNull UUID id) {
 		User user = authService.getLoggedInUser();
-		Optional<Project> projectOptional = projectRepository.findByIdAndUser_Id(id, user.getId());
-
-		if ( projectOptional.isEmpty() ) {
-			return Optional.empty();
-		}
-
-		Project project = projectOptional.get();
-		return Optional.of(project);
+		return projectRepository.findByIdAndUser_Id(id, user.getId());
 	}
 
 	@Override
