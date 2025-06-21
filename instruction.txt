@@ -43,19 +43,19 @@ Naming DTO should be capitalized, instead of `Dto`, it should be `DTO`
 1.  **Input Object**: Create a record or class for request data (e.g., `TaskInput.java`). This is used in `POST`/`PUT` request bodies. Use Jakarta Validation annotations (`@NotBlank`, etc.).
 2.  **DTO Object**: Create a record or class for response data (e.g., `TaskDTO.java`). This object defines the public view of your entity.
 3.  **Filter Input Object**: Create a record for filtering parameters (e.g., `TaskFilterInput.java`). Its fields should match the entity fields you want to filter by.
-4.  **Mappers**: Create mapper interfaces (e.g., `TaskMapper`, `TaskInputMapper`) to handle conversion between `TaskInput` -> `Task` and `Task` -> `TaskDTO`.
-5. **Naming**: Use a consistent naming convention for all objects. For example, `TaskInput` and `TaskInputMapper` might be named `TaskInput` and `TaskInputMapper` because it's a request object.
-6. **CRITICAL RULE**: All mappers must be scoped by the user's ID (`userId`) to prevent data leakage between tenants.
-
-    ```java
-    // Example: TaskMapper.java
-    @Mapper(componentModel = "spring")
-    public interface TaskMapper {
-        Task map(TaskInput taskInput);
-        TaskDTO map(Task task);
-        // ... other mappings
-    }
-    ```
+4.  **Mappers**: Create mapper interfaces (e.g., `TaskMapper`, `TaskInputMapper`) to handle conversion between `Input` -> `Entity` and `Entity` -> `DTO`.
+    *   **IMPORTANT**: These are Java interfaces annotated with `@Mapper(componentModel = "spring")`. You must **not** create an implementation class for them. The MapStruct library automatically generates the implementation during the build process.
+    *   **Example**:
+        ```java
+        // Example: TaskMapper.java
+        @Mapper(componentModel = "spring")
+        public interface TaskMapper {
+            TaskDTO toDto(Task task);
+            Task toEntity(TaskInput taskInput);
+            // ... other mappings
+        }
+        ```
+5.  **Naming**: Use a consistent naming convention for all objects. For example, `TaskInput` and `TaskInputMapper` might be named `TaskInput` and `TaskInputMapper` because it's a request object.
 
 ### Step 4: Create the Service Layer (Business Logic)
 
